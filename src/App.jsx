@@ -1,11 +1,14 @@
 
 import React from 'react';
 import './styles/App.css';
-import PostItem from './PostItem';
-import { useState, useRef } from 'react';
+import { useState, } from 'react';
 import PostList from './PostList';
 import PostButton from './PostButton';
 import PostInput from './PostInput';
+import PostForm from './PostForm';
+import PostSelect from './PostSelect';
+
+
 
 
 function App() {
@@ -14,31 +17,47 @@ function App() {
     {id: 2, title: 'JavaScript2', body:'Description'},
     {id: 3, title: 'JavaScript3', body:'Description'},
   ])
-  
-const [title, setTitle] = useState('');
-const [body, setBody] = useState('');
+  const [selectedSort, setSelectedSort] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
-const addNewPost = (e) => {
-  e.preventDefault()
-  const newPost = {
-    title,
-    body,
-    id: Date.now(),
-
+  function getSortedPosts(){
+if(selectedSort){
+  return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+}
+return posts;
   }
+  
+  const sortedPosts = getSortedPosts()
+const createPost = (newPost) => {
 setPosts([...posts, newPost])
-setTitle('')
-setBody('')
+}
+const removePost = (post) => {
+  setPosts(posts.filter(p => p.id !== post.id))
+}
+const sortPosts = (sort) => {
+setSelectedSort(sort)
 }
   return (
     <div className="App">
-      <form>
-        <PostInput  value = {title} onChange = {e => setTitle(e.target.value)} type="text" placeholder='Title'/>
-        <PostInput  value = {body} onChange = {e => setBody(e.target.value)} type="text" placeholder='Body'/>
-        <PostButton onClick = {addNewPost} >Create post</PostButton>
+     <PostForm create = {createPost} />
+     <PostInput value={searchQuery}
+     onChange={e => setSearchQuery(e.target.value)}
+     placeholder='Search...'
+     />
+     <PostSelect
+     value = {selectedSort}
+     onChange={sortPosts}
+     defaultValue={'Sorted by'}
+     options={[
+      {value: 'title', name: 'By title'},
+      {value: 'body', name: 'By body'}
 
-      </form>
-   <PostList posts={posts}/>
+     ]}
+     />
+     {posts.length !== 0
+     ?    <PostList remove = {removePost} posts={sortedPosts}/>
+     :<h2 className='emptylist'>Post list is empty!</h2>
+     }
     </div>
   );
 }

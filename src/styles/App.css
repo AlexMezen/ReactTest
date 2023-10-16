@@ -21,3 +21,8 @@
 .tit{
     text-align: center;
 }
+.emptylist{
+    text-align: center;
+    color: red;
+    margin-top: 15px;
+}
